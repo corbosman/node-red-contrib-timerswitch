@@ -1,0 +1,33 @@
+{
+  "name": "node-red-contrib-timeswitch",
+  "version": "0.0.1",
+  "description": "Node-Red Time Switch",
+  "main": "timeswitch.js",
+  "author": {
+    "name": "Cor Bosman",
+    "email": "cor@in.ter.net"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node-red",
+    "timer",
+    "switch",
+    "timeswitch",
+    "clock",
+    "schedule",
+    "dusk",
+    "dawn",
+    "multi"
+  ],
+  "node-red": {
+    "nodes": {
+      "timeswitch": "timeswitch.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corbosman/node-red-contrib-timeswitch.git"
+  },
+  "dependencies": {
+  }
+}

@@ -1,0 +1,377 @@
+<script type="text/x-red" data-template-name="timeswitch">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-paused"></label>
+        <input type="checkbox" id="node-input-paused" style="width: 20px;">
+        <label for="node-input-paused" style="width: 200px;">Temporarily Pause Schedules</label>
+    </div>
+    <div class="form-row" style="margin-bottom: 2px;">
+        <p class="text-center"><i class="fa fa-list"></i>&nbsp;<strong>Schedules</strong></p>
+    </div>
+    <div class="form-row node-timeswitch-schedules-row">
+        <ol id="node-timeswitch-schedules"></ol>
+    </div>
+    <hr>
+    <div class="form-row">
+        <label for="node-input-onpayload"><i class="fa fa-envelope"></i> <span>On Payload</span></label>
+        <input type="text" id="node-input-onpayload" placeholder="on">
+    </div>
+    <div class="form-row">
+        <label for="node-input-offpayload"><i class="fa fa-envelope"></i> <span>Off Payload</span></label>
+        <input type="text" id="node-input-offpayload" placeholder="off">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label for="node-input-ontopic"><i class="fa fa-tasks"></i> <span>On Topic</span></label>
+        <input type="text" id="node-input-ontopic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-offtopic"><i class="fa fa-tasks"></i> <span>Off Topic</span></label>
+        <input type="text" id="node-input-offtopic">
+    </div>
+    <hr>
+
+</script>
+
+<script type="text/x-red" data-template-timeswitch-row="">
+    <div>
+        <div style="display: inline-block; width: 50px; margin-left: 10px;">
+            <span><i class="fa fa-clock-o"></i><strong>&nbsp;&nbsp;ON</strong></span>
+        </div>
+        <select class="node-input-timeswitch-select-hours on_h fill24" style="display: inline-block; width: 75px; margin-left: 10px;">
+            <option value="-1">hour</option>
+        </select>
+        :
+        <select class="node-input-timeswitch-select-minutes on_m fill60" style="display: inline-block; width: 75px;">
+            <option value="-1">min</option>
+        </select>
+        :
+        <select class="node-input-timeswitch-select-seconds on_s fill60" style="display: inline-block; width: 75px;">
+            <option value="-1">sec</option>
+        </select>
+    </div>
+    <div style="margin-top: 8px;">
+        <div style="display: inline-block; width: 50px; margin-left: 10px;">
+            <span><i class="fa fa-clock-o"></i><strong>&nbsp;&nbsp;OFF</strong></span>
+        </div>
+        <select class="node-input-timeswitch-select-hours off_h fill24" style="display: inline-block; width: 75px; margin-left: 10px;">
+            <option value="-1">hour</option>
+        </select>
+        :
+        <select class="node-input-timeswitch-select-minutes off_m fill60" style="display: inline-block; width: 75px;">
+            <option value="-1">min</option>
+        </select>
+        :
+        <select class="node-input-timeswitch-select-seconds off_s fill60" style="display: inline-block; width: 75px;">
+            <option value="-1">sec</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/javascript">
+
+    RED.nodes.registerType('timeswitch', {
+        category: 'input',
+        color: '#C0DEED',
+        defaults: {
+            name:       { value: ''},
+            ontopic:    { value: ''},
+            offtopic:   { value: ''},
+            onpayload:  { value: ''},
+            offpayload: { value: ''},
+            paused:     { value: false },
+            schedules: {
+                value: [
+
+                ],
+                validate: function(v) {
+                    var schedules = [];
+
+                    if (v.length < 1) {
+                        return true;
+                    }
+
+                    /** make a first pass and create extra schedules if off is before on
+                     * this so we can calculate overlaps later on */
+                    for (var i=0; i < v.length; i++) {
+                        var on,off;
+                        v[i].valid = true;
+
+                        /** we need to work with ints */
+                        on_h  = parseInt(v[i].on_h);
+                        on_m  = parseInt(v[i].on_m);
+                        on_s  = parseInt(v[i].on_s);
+                        off_h = parseInt(v[i].off_h);
+                        off_m = parseInt(v[i].off_m);
+                        off_s = parseInt(v[i].off_s);
+
+                        on  = createTime(on_h,on_m,on_s);
+                        off = createTime(off_h,off_m,off_s);
+
+                        if (on.getTime() <= off.getTime()) {
+                            /** normal schedule */
+                            schedules.push({
+                                on_h: on_h, on_m: on_m, on_s: on_s, off_h: off_h, off_m: off_m, off_s: off_s,
+                                on: on, off: off, n: i, valid: true
+                            });
+                        } else {
+                            /** off before on */
+                            on  = createTime(0,0,0);
+                            off = createTime(off_h,off_m,off_s);
+
+                            schedules.push({
+                                on_h: 0, on_m: 0, on_s: 0, off_h: off_h, off_m: off_m, off_s: off_s,
+                                on: on, off: off, n: i, valid: true
+                            });
+
+                            on  = createTime(on_h,on_m,on_s);
+                            off = createTime(23,59,59);
+
+                            schedules.push({
+                                on_h: on_h, on_m: on_m, on_s: on_s, off_h: 23, off_m: 59, off_s: 59,
+                                on: on, off: off, n: i, valid: true
+                            });
+                        }
+                    }
+
+                    /** validate schedules */
+                    for (var i=0; i < schedules.length; i++) {
+                        s = schedules[i];
+
+                        /** hours should be 0..23 */
+                        if (s.on_h < 0 || s.on_h > 23 || s.off_h < 0 || s.off_h > 23) {
+                            v[s.n].valid = false;
+                        }
+
+                        /** minutes and seconds should be 0..59 */
+                        if (s.on_m < 0 || s.on_s < 0 || s.on_m > 59 || s.on_s > 59 ||
+                                s.off_m < 0 || s.off_s < 0 || s.off_m > 59 || s.off_s > 59 ) {
+                            v[s.n].valid = false;
+                        }
+
+                        /** we dont allow both times to be the same */
+                        if (s.on.getTime() == s.off.getTime()) {
+                            v[s.n].valid = false;
+                        }
+
+                        /** check schedule overlap */
+
+                        var start_i = schedules[i].on.getTime();
+                        var end_i   = schedules[i].off.getTime();
+
+                        for (j=0; j < schedules.length; j++) {
+                            if (i == j) continue;
+
+                            var start_j = schedules[j].on.getTime();
+                            var end_j   = schedules[j].off.getTime();
+
+                            if ( ! (start_j >= end_i || end_j <= start_i) )  {
+                                v[s.n].valid = false;
+                            }
+                        }
+                    }
+
+                    /** if any are not valid return false */
+                    for (i=0; i < v.length; i++) {
+                        if (v[i].valid === false) return false;
+                    }
+
+                    return true;
+
+                    /**
+                     * create a time object
+                     */
+                    function createTime(h,m,s) {
+                        d  = new Date();
+                        d.setHours(h);
+                        d.setMinutes(m);
+                        d.setSeconds(s);
+                        return d;
+                    }
+                }
+            }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "timer.png",
+        label: function() {
+            return this.name || 'time switch';
+        },
+        paletteLabel: 'time switch',
+
+        oneditprepare: function() {
+            var node = this;
+
+            /**
+             * prepare schedule
+             */
+            var scheduleList = $('#node-timeswitch-schedules');
+
+            scheduleList.css('min-height','110px').css('min-width','350px').editableList({
+                sortable: true,
+                removable: true,
+                addItem: function(row, index, data) {
+                    schedule = data.schedule || false;
+
+                    var template = $("script[data-template-timeswitch-row]").html()||"";
+                    $(row).append(template);
+                    fillOptions(row, schedule);
+                    scheduleResize();
+                },
+                removeItem: function(data) {
+                    scheduleResize();
+                },
+            });
+
+            /**
+             * pass all existing schedules to editableList or pass an enpty one
+             */
+            if (node.schedules.length == 0) {
+                scheduleList.editableList('addItem');
+            } else {
+                for (var i=0; i < node.schedules.length; i++) {
+                    var schedule = node.schedules[i];
+                    scheduleList.editableList('addItem', {schedule:schedule,i:i} );
+                }
+            }
+
+            /**
+             * resize the editableList
+             */
+            function scheduleResize() {
+                height = 40 + (scheduleCount() * 93);
+                scheduleList.editableList('height', height);
+            }
+
+            /**
+             * number of schedules
+             * @returns {*}
+             */
+            function scheduleCount() {
+                return scheduleList.editableList('length');
+            }
+
+            /**
+             * fill the selects with hours/minutes/seconds
+             * @param row
+             */
+            function fillOptions(row, schedule) {
+
+                schedule = schedule ? schedule : { on_h:-1,on_m:-1,on_s:-1,off_h:-1,off_m:-1,off_s:-1};
+
+                var hours = row.find('.fill24');
+                for (i = 0; i < 24; i++) {
+                    i = pad(i);
+                    hours.append($("<option></option>").val(i).text(i));
+                }
+
+                var minsec = row.find('.fill60');
+                for (i = 0; i < 60; i++) {
+                    i = pad(i);
+                    minsec.append($("<option></option>").val(i).text(i));
+                }
+
+                /**
+                 * set the value of the select boxes
+                 */
+                row.find('.on_h').val(schedule.on_h);
+                row.find('.on_m').val(schedule.on_m);
+                row.find('.on_s').val(schedule.on_s);
+                row.find('.off_h').val(schedule.off_h);
+                row.find('.off_m').val(schedule.off_m);
+                row.find('.off_s').val(schedule.off_s);
+
+                /** set error on the li */
+                if (schedule.valid === false) {
+                    row.closest('li').css('background-color', '#f9b1bf');
+                }
+
+                /** modify some css */
+                row.parent().find('.red-ui-editableList-item-handle').css('color', 'black').css('left', '10px');
+                row.parent().find('.red-ui-editableList-item-remove').css('right', '10px');
+            }
+
+            /**
+             * prepend string with 0
+             * @param s
+             * @returns {string|*}
+             */
+            function pad(s) {
+                s = s.toString();
+                if (s.length < 2) {
+                    s = "0".concat(s);
+                }
+                return s;
+            }
+
+        },
+
+        oneditsave: function() {
+            var node = this;
+            node.schedules = [];
+
+            var scheduleList = $('#node-timeswitch-schedules');
+            var schedules = scheduleList.editableList('items');
+
+            schedules.each(function(i) {
+                var on_h  = this.find('.on_h').val();
+                var on_m  = this.find('.on_m').val();
+                var on_s  = this.find('.on_s').val();
+                var off_h = this.find('.off_h').val();
+                var off_m = this.find('.off_m').val();
+                var off_s = this.find('.off_s').val();
+
+                var schedule = {
+                    on_h: on_h,
+                    on_m: on_m,
+                    on_s: on_s,
+                    off_h: off_h,
+                    off_m: off_m,
+                    off_s: off_s
+                };
+
+                /** if any of the inputs was modified, save it */
+                if (on_h != -1 || on_m != -1 || on_s != -1 || off_h != -1 || off_m != -1 || off_s != -1 ) {
+                    node.schedules.push(schedule);
+                }
+            });
+        },
+    });
+
+</script>
+
+<script type="text/x-red" data-help-name="timeswitch">
+    <p>This is a multi-schedule daily time switch node which allows you to add multiple on/off periods for a single output with a minumum duration of 1 second.  It is meant to resemble the functionality of mechanical and digital wall timers. </p>
+
+    <p><b>Configuration</b>
+    <ul>
+        <li><code>name</code> - The name of the node as shown in the node editor (default: time switch)</li>
+        <li><code>pause</code> - This allows you to temporarily pause the scheduler. <b>Note:</b> incoming messages will still change the output.</li>
+        <li><code>schedules</code> - Here you define the on/off schedules. You can add more on/off periods by clicking the add button.
+        You must fill in all fields, hours, minutes and seconds. <b>Note:</b> Overlapping time periods are considered an error.
+        Schedules that are not considered valid will turn red in the editor and will not be activated on deploy.</li>
+        <li><code>payload</code> - The payload to send to the output. (default: on/off)</li>
+        <li><code>topic</code> - The topic to send to the output. (default: empty)</li>
+    </ul>
+    <p><b>Output</b>
+    <ul>
+        <li><code>msg.payload</code> - The payload as configured in the node (default: on/off).</li>
+        <li><code>msg.topic</code> - The topic as configured in the node.</li>
+    </ul>
+
+    <p><b>Input</b>
+
+    <ul>
+        <li><code>msg.payload</code> - <i>string</i> <br><br>
+        You can send a msg to this node to manually override the schedule.
+        Send an <code>on</code>,<code>1</code> or <code>true</code> to immediately turn the output on. Alternatively send <code>off</code>,<code>0</code> or <code>false</code> to turn it off.
+        It will output the configured on/off payload and topic, unless they are empty in which case they will pass on the existing payload and topic.
+        Other attributes are passed on untouched. <b>Note:</b>: Unless the scheduler is paused the next scheduled time will reset the manual override. </li>
+        <br>
+        You can also send a <code>pause</code> command through the input which will pause the scheduler.
+         <b>Note:</b> this is not saved and the schedule will continue after a restart of Node-Red.
+    </ul>
+</script>
