@@ -27,7 +27,5 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/corbosman/node-red-contrib-timeswitch.git"
-  },
-  "dependencies": {
   }
 }
