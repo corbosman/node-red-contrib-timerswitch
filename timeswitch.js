@@ -7,15 +7,13 @@ module.exports = function(RED) {
     var scheduler = require('./lib/scheduler');
 
     RED.nodes.registerType("timeswitch", function(config) {
-        console.log(config);
-
         RED.nodes.createNode(this,config);
         var node = this;
-        var state = 'off';
-        
-        /**
-         * create scheduler
-         */
+
+        /** maintain the output state so we dont send msgs if we dont have to */
+        var outputState;
+
+        /** create schedules through the scheduler */
         var schedules = scheduler.create(config.schedules);
 
         /** start up node handlers */
@@ -27,20 +25,21 @@ module.exports = function(RED) {
             return;
         }
 
+        /* no schedules to run */
         if (scheduler.count() < 1) {
             node.status({fill: 'red', shape: "dot", text: 'No schedules to run'});
             return;
         }
 
         /* start all the scheduled events
-         * if the initial state is on, we fire an event in the past which starts immediately
+         * if the initial state is on, the timeout will be negative which means it starts immediately
          */
         var state = 'off';
         var until = false;
         schedules.forEach(function(s, i) {
             if (s.alreadyRunning) {
                 state = 'on';
-                s.events.start = setTimeout(startOn, scheduler.until(s.on), s, i);
+                s.events.start = setTimeout(startNow, scheduler.until(s.on), s, i);
                 until = (!until || s.off.getTime() < until.getTime() ? s.off : until);
             } else {
                 s.events.start = setTimeout(turnOn, scheduler.until(s.on), s, i);
@@ -52,7 +51,7 @@ module.exports = function(RED) {
         setStatus(state, until, false);
 
         /* send initial msg */
-        send(state);
+        send(state, true);
 
         /* done */
 
@@ -63,7 +62,7 @@ module.exports = function(RED) {
          * @param s
          * @param i
          */
-        function startOn(s,i) {
+        function startNow(s,i) {
             setStatus('on', s.off, false);
             s.events.end   = setTimeout(turnOff, scheduler.until(s.off), s, i);
             s.events.start = setTimeout(turnOn, scheduler.addDay(i), s, i);
@@ -75,8 +74,11 @@ module.exports = function(RED) {
          * @param i
          */
         function turnOn(s, i) {
+            node.send({
+               payload: 'bar'
+            });
             setStatus('on', s.off, false);
-            send('on', 'on', '');
+            send('on');
             s.events.end   = setTimeout(turnOff, scheduler.duration(s.on, s.off), s, i);
             s.events.start = setTimeout(turnOn, scheduler.addDay(i), s, i);
         }
@@ -87,8 +89,8 @@ module.exports = function(RED) {
          * @param i
          */
         function turnOff(s, i) {
-            send('off');
             setStatus('off', scheduler.next().on, false);
+            send('off');
         }
 
         /**
@@ -114,11 +116,17 @@ module.exports = function(RED) {
          *
          * @param state
          */
-        function send(state, payload, topic) {
+        function send(state, delay) {
             var msg;
 
-            payload = (typeof payload === 'undefined') ? state : payload;
-            topic   = (typeof topic   === 'undefined') ? ''    : topic;
+            /* delay the message in a setTimeout */
+            delay = (delay === undefined) ? false : delay;
+
+            /* if global state is the same, dont send a new message */
+            if (state === outputState) return;
+
+            /* set new output state */
+            outputState = state;
 
             if (state == 'on') {
                 msg = {
@@ -132,9 +140,14 @@ module.exports = function(RED) {
                 };
             }
 
-            setTimeout(function(){
+            if (delay) {
+                setTimeout(function(){
+                    node.send(msg);
+                }, 1000);
+            } else {
                 node.send(msg);
-            }, 100);
+            }
+
         }
 
         /**
@@ -181,8 +194,10 @@ module.exports = function(RED) {
                     setStatus('off', false, true);
                 }
 
-                node.send(msg);
-
+                if (command !== outputState) {
+                    outputState = command;
+                    node.send(msg);
+                }
 
             });
 
