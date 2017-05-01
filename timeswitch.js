@@ -74,9 +74,6 @@ module.exports = function(RED) {
          * @param i
          */
         function turnOn(s, i) {
-            node.send({
-               payload: 'bar'
-            });
             setStatus('on', s.off, false);
             send('on');
             s.events.end   = setTimeout(turnOff, scheduler.duration(s.on, s.off), s, i);
