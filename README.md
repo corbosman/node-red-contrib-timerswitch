@@ -25,7 +25,7 @@
     You can send a msg to this node to manually override the schedule.
     Send an <code>on</code>,<code>1</code> or <code>true</code> to immediately turn the output on. Alternatively send <code>off</code>,<code>0</code> or <code>false</code> to turn it off.
     It will output the configured on/off payload and topic, unless they are empty in which case they will pass on the existing payload and topic.
-    Other attributes are passed on untouched. <b>Note:</b>: Unless the scheduler is paused the next scheduled time will reset the manual override. </li>
+    Other attributes are passed on untouched. <b>Note</b>: Unless the scheduler is paused the next scheduled time will reset the manual override. </li>
     <br>
     You can also send a <code>pause</code> command through the input which will pause the scheduler.
      <b>Note:</b> this is not saved and the schedule will continue after a restart of Node-Red.
