@@ -7,21 +7,18 @@ module.exports = function(RED) {
     var scheduler = require('./lib/scheduler');
 
     RED.nodes.registerType("timeswitch", function(config) {
+        console.log(config);
 
         RED.nodes.createNode(this,config);
         var node = this;
-
-        setTimeout(function(){
-            node.send({payload: 1});
-        },500);
-        node.send({payload: 2});
-
+        var state = 'off';
+        
         /**
          * create scheduler
          */
         var schedules = scheduler.create(config.schedules);
 
-        /** start up incoming msg handler */
+        /** start up node handlers */
         handleNodeEvents();
 
         /** we have paused the schedule, dont fire ON/OFF event handlers */
@@ -35,7 +32,7 @@ module.exports = function(RED) {
             return;
         }
 
-        /* start off all the on events
+        /* start all the scheduled events
          * if the initial state is on, we fire an event in the past which starts immediately
          */
         var state = 'off';
@@ -43,7 +40,7 @@ module.exports = function(RED) {
         schedules.forEach(function(s, i) {
             if (s.alreadyRunning) {
                 state = 'on';
-                s.events.start = setTimeout(instantOn, scheduler.until(s.on), s, i);
+                s.events.start = setTimeout(startOn, scheduler.until(s.on), s, i);
                 until = (!until || s.off.getTime() < until.getTime() ? s.off : until);
             } else {
                 s.events.start = setTimeout(turnOn, scheduler.until(s.on), s, i);
@@ -55,11 +52,9 @@ module.exports = function(RED) {
         setStatus(state, until, false);
 
         /* send initial msg */
-        sendMessage(state);
+        send(state);
 
         /* done */
-
-
 
 
         /**
@@ -68,7 +63,7 @@ module.exports = function(RED) {
          * @param s
          * @param i
          */
-        function instantOn(s,i) {
+        function startOn(s,i) {
             setStatus('on', s.off, false);
             s.events.end   = setTimeout(turnOff, scheduler.until(s.off), s, i);
             s.events.start = setTimeout(turnOn, scheduler.addDay(i), s, i);
@@ -81,7 +76,7 @@ module.exports = function(RED) {
          */
         function turnOn(s, i) {
             setStatus('on', s.off, false);
-            sendMessage('on');
+            send('on', 'on', '');
             s.events.end   = setTimeout(turnOff, scheduler.duration(s.on, s.off), s, i);
             s.events.start = setTimeout(turnOn, scheduler.addDay(i), s, i);
         }
@@ -92,7 +87,7 @@ module.exports = function(RED) {
          * @param i
          */
         function turnOff(s, i) {
-            sendMessage('off');
+            send('off');
             setStatus('off', scheduler.next().on, false);
         }
 
@@ -119,8 +114,11 @@ module.exports = function(RED) {
          *
          * @param state
          */
-        function sendMessage(state) {
+        function send(state, payload, topic) {
             var msg;
+
+            payload = (typeof payload === 'undefined') ? state : payload;
+            topic   = (typeof topic   === 'undefined') ? ''    : topic;
 
             if (state == 'on') {
                 msg = {
@@ -133,30 +131,10 @@ module.exports = function(RED) {
                     topic: config.offtopic ? config.offtopic : ''
                 };
             }
-            console.log('sending msg');
-            console.log(msg);
-            node.send(msg);
-        }
 
-        /**
-         * node events
-         */
-        function handleNodeEvents() {
-
-            /* handle incoming msgs */
-            node.on('input', function(msg) {
-                var command = msg.payload;
-
+            setTimeout(function(){
                 node.send(msg);
-            });
-
-            /* clean up after close */
-            node.on('close', function() {
-                schedules.forEach(function(s) {
-                   if (s.events && s.events.start) clearTimeout(s.events.start);
-                   if (s.events && s.events.end) clearTimeout(s.events.end);
-               });
-            });
+            }, 100);
         }
 
         /**
@@ -182,5 +160,39 @@ module.exports = function(RED) {
             return s;
         }
 
+        /**
+         * node events
+         */
+        function handleNodeEvents() {
+
+            /* handle incoming msgs */
+            node.on('input', function(msg) {
+                var command = msg.payload;
+
+                if (command === 'on' || command === 1 || command === '1' || command === true ) {
+                    msg.payload = config.onpayload ? config.onpayload : msg.payload;
+                    msg.topic   = config.ontopic ? config.ontopic : msg.topic;
+                    setStatus('on', false, true);
+                }
+
+                if (command === 'off' || command === 0 || command === '0' || command === false ) {
+                    msg.payload = config.offpayload ? config.offpayload : msg.payload;
+                    msg.topic   = config.offtopic ? config.offtopic : msg.topic;
+                    setStatus('off', false, true);
+                }
+
+                node.send(msg);
+
+
+            });
+
+            /* clean up after close */
+            node.on('close', function() {
+                schedules.forEach(function(s) {
+                   if (s.events && s.events.start) clearTimeout(s.events.start);
+                   if (s.events && s.events.end) clearTimeout(s.events.end);
+               });
+            });
+        }
     });
 }
