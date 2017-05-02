@@ -7,6 +7,7 @@ It is meant to resemble the functionality of mechanical and digital wall timers.
 <hr>
 This node can be installed through the Node-Red palette or manually using npm in your node-red folder.
 
+
 ```
 $ npm install node-red-contrib-timeswitch --save
 ```
