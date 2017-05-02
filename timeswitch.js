@@ -13,93 +13,113 @@ module.exports = function(RED) {
         /** maintain the output state so we dont send msgs if we dont have to */
         var outputState;
 
-        /** create schedules through the scheduler */
-        var schedules = scheduler.create(config.schedules);
+        /** initialise the scheduler */
+        scheduler.create(config.schedules);
 
-        /** start up node handlers */
-        handleNodeEvents();
+        /* register an alarm handler */
+        scheduler.register(alarm);
 
-        /** we have paused the schedule, dont fire ON/OFF event handlers */
-        if (config.paused) {
-            node.status({fill: 'red', shape: "dot", text: 'Paused'});
-            return;
-        }
+        /* disable scheduler if configured as such */
+        if (config.disabled) scheduler.disable();
 
-        /* no schedules to run */
-        if (scheduler.count() < 1) {
-            node.status({fill: 'red', shape: "dot", text: 'No schedules to run'});
-            return;
-        }
+        /** start up node listeners */
+        // startListeners();
 
-        /* start all the scheduled events
-         * if the initial state is on, the timeout will be negative which means it starts immediately
-         */
-        var state = 'off';
-        var until = false;
-        schedules.forEach(function(s, i) {
-            if (s.alreadyRunning) {
-                state = 'on';
-                s.events.start = setTimeout(startNow, scheduler.until(s.on), s, i);
-                until = (!until || s.off.getTime() < until.getTime() ? s.off : until);
-            } else {
-                s.events.start = setTimeout(turnOn, scheduler.until(s.on), s, i);
-                until = (!until || s.on.getTime() < until.getTime() ? s.on : until);
-            }
+        /** start the scheduler */
+        scheduler.start();
+
+        setTimeout(function() {
+            status();
+            send();
+        }, 1000);
+
+
+        /* clean up after close */
+        node.on('close', function() {
+            scheduler.get().forEach(function(s) {
+                if (s.events && s.events.start) clearTimeout(s.events.start);
+                if (s.events && s.events.end) clearTimeout(s.events.end);
+            });
         });
 
-        /* set the initial status msg */
-        setStatus(state, until, false);
+        /* handle incoming msgs */
+        node.on('input', function(msg) {
+            var command = msg.payload;
 
-        /* send initial msg */
-        send(state, true);
+            if (command === 'on' || command === 1 || command === '1' || command === true ) {
+                scheduler.manual('on');
+            }
+
+            if (command === 'off' || command === 0 || command === '0' || command === false ) {
+                scheduler.manual('off');
+            }
+
+            if (command === 'pause') scheduler.pause();
+            if (command === 'run') scheduler.run();
+
+            status();
+            send(msg);
+        });
 
         /* done */
 
 
         /**
-         * finish an already started ON, and fire a new event for the next ON
+         * alarm handler function
          *
          * @param s
-         * @param i
          */
-        function startNow(s,i) {
-            setStatus('on', s.off, false);
-            s.events.end   = setTimeout(turnOff, scheduler.until(s.off), s, i);
-            s.events.start = setTimeout(turnOn, scheduler.addDay(i), s, i);
+        function alarm(s) {
+            /** set new status */
+            status();
+
+            /** send new msg */
+            send();
         }
 
         /**
-         * turning ON, fire OFF event and new ON event, set status
-         * @param s
-         * @param i
+         * print the current status
          */
-        function turnOn(s, i) {
-            setStatus('on', s.off, false);
-            send('on');
-            s.events.end   = setTimeout(turnOff, scheduler.duration(s.on, s.off), s, i);
-            s.events.start = setTimeout(turnOn, scheduler.addDay(i), s, i);
-        }
+        function status() {
+            var state       = scheduler.state();
+            var disabled    = scheduler.disabled();
+            var paused      = scheduler.paused();
+            var manual      = scheduler.manual();
+            var count       = scheduler.count();
+            var current     = count > 0 ? scheduler.current() : false;
+            var next        = count > 0 ? scheduler.next() : false;
+            var now         = new Date();
 
-        /**
-         * turning device OFF, setting status
-         * @param s
-         * @param i
-         */
-        function turnOff(s, i) {
-            setStatus('off', scheduler.next().on, false);
-            send('off');
-        }
+            var color = state === 'on' ? 'green' : (state === 'off' ? 'red' : 'grey');
 
-        /**
-         * set the node status
-         *
-         * @param state
-         * @param color
-         * @param d
-         */
-        function setStatus(state, until, manual) {
-            var color = state == 'on' ? 'green' : 'red';
-            var text = state + ' ' + (until ? ' until ' + statusTime(until) : (manual ? 'manual' : ''));
+            /* build the status text */
+            var text = state ? state : '';
+
+            if (manual) text += ' manual';
+
+            if (disabled) {
+                text += ' (disabled)';
+            } else if (count < 1) {
+                text += ' (empty)';
+            } else if (paused) {
+                text += ' (paused)'
+            }
+
+            if (!disabled && !paused && count > 0) {
+                var untiltime;
+
+                if (manual && state=='on'  && current.active)   untiltime = current.off;
+                if (manual && state=='off' && current.active)   untiltime = next.on;
+                if (manual && state=='on'  && !current.active)  untiltime = current.off;
+                if (manual && state=='off' && !current.active)  untiltime = current.on;
+
+                untiltime = manual ? untiltime : (current.active ? current.off : current.on);
+
+                text += ' until ' + statusTime(untiltime);
+
+                /** if it's tomorrow, add a visual cue */
+                if (scheduler.earlier(untiltime, now)) text += '+1';
+            }
 
             node.status({
                 fill: color,
@@ -108,43 +128,34 @@ module.exports = function(RED) {
             });
         }
 
+
         /**
          * send a msg to the next node
          *
          * @param state
          */
-        function send(state, delay) {
-            var msg;
+        function send(msg) {
+            if (typeof msg == 'undefined') msg = {topic: ''};
 
-            /* delay the message in a setTimeout */
-            delay = (delay === undefined) ? false : delay;
+            var state = scheduler.state();
 
-            /* if global state is the same, dont send a new message */
+            /** if we dont know the state, dont send a msg */
+            if (!state) return;
+
+            /* if state hasnt changed, just return */
             if (state === outputState) return;
 
             /* set new output state */
             outputState = state;
 
             if (state == 'on') {
-                msg = {
-                    payload: config.onpayload ? config.onpayload : state,
-                    topic: config.ontopic ? config.ontopic : ''
-                };
+                msg.payload = config.onpayload ? config.onpayload : state;
+                msg.topic   = config.ontopic ? config.ontopic : msg.topic;
             } else {
-                msg = {
-                    payload: config.offpayload ? config.offpayload : state,
-                    topic: config.offtopic ? config.offtopic : ''
-                };
+                msg.payload = config.offpayload ? config.offpayload : state;
+                msg.topic   = config.offtopic ? config.offtopic : msg.topic;
             }
-
-            if (delay) {
-                setTimeout(function(){
-                    node.send(msg);
-                }, 1000);
-            } else {
-                node.send(msg);
-            }
-
+            node.send(msg);
         }
 
         /**
@@ -170,41 +181,5 @@ module.exports = function(RED) {
             return s;
         }
 
-        /**
-         * node events
-         */
-        function handleNodeEvents() {
-
-            /* handle incoming msgs */
-            node.on('input', function(msg) {
-                var command = msg.payload;
-
-                if (command === 'on' || command === 1 || command === '1' || command === true ) {
-                    msg.payload = config.onpayload ? config.onpayload : msg.payload;
-                    msg.topic   = config.ontopic ? config.ontopic : msg.topic;
-                    setStatus('on', false, true);
-                }
-
-                if (command === 'off' || command === 0 || command === '0' || command === false ) {
-                    msg.payload = config.offpayload ? config.offpayload : msg.payload;
-                    msg.topic   = config.offtopic ? config.offtopic : msg.topic;
-                    setStatus('off', false, true);
-                }
-
-                if (command !== outputState) {
-                    outputState = command;
-                    node.send(msg);
-                }
-
-            });
-
-            /* clean up after close */
-            node.on('close', function() {
-                schedules.forEach(function(s) {
-                   if (s.events && s.events.start) clearTimeout(s.events.start);
-                   if (s.events && s.events.end) clearTimeout(s.events.end);
-               });
-            });
-        }
     });
 }

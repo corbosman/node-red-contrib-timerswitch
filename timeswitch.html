@@ -4,9 +4,9 @@
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
     <div class="form-row">
-        <label for="node-input-paused"></label>
-        <input type="checkbox" id="node-input-paused" style="width: 20px;">
-        <label for="node-input-paused" style="width: 200px;">Temporarily Pause Schedules</label>
+        <label for="node-input-disabled"></label>
+        <input type="checkbox" id="node-input-disabled" style="width: 20px;">
+        <label for="node-input-disabled" style="width: 200px;">Temporarily Pause Schedules</label>
     </div>
     <div class="form-row" style="margin-bottom: 2px;">
         <p class="text-center"><i class="fa fa-list"></i>&nbsp;<strong>Schedules</strong></p>
@@ -82,7 +82,7 @@
             offtopic:   { value: ''},
             onpayload:  { value: ''},
             offpayload: { value: ''},
-            paused:     { value: false },
+            disabled:     { value: false },
             schedules: {
                 value: [
 
@@ -346,32 +346,49 @@
 <script type="text/x-red" data-help-name="timeswitch">
     <p>This is a multi-schedule daily time switch node which allows you to add multiple on/off periods for a single output with a minumum duration of 1 second.  It is meant to resemble the functionality of mechanical and digital wall timers. </p>
 
-    <p><b>Configuration</b>
+    <br><br>
+    <b>Configuration</b>
     <ul>
         <li><code>name</code> - The name of the node as shown in the node editor (default: time switch)</li>
-        <li><code>pause</code> - This allows you to temporarily pause the scheduler. <b>Note:</b> incoming messages will still change the output.</li>
+        <li><code>disable</code> - This allows you to temporarily disable the scheduler. <b>Note:</b> incoming messages will still change the output.</li>
         <li><code>schedules</code> - Here you define the on/off schedules. You can add more on/off periods by clicking the add button.
         You must fill in all fields, hours, minutes and seconds. <b>Note:</b> Overlapping time periods are considered an error.
         Schedules that are not considered valid will turn red in the editor and will not be activated on deploy.</li>
         <li><code>payload</code> - The payload to send to the output. (default: on/off)</li>
         <li><code>topic</code> - The topic to send to the output. (default: empty)</li>
     </ul>
-    <p><b>Output</b>
+
+    <br><br>
+    <b>Status</b>
+    <p>The node status shows the time until the next event. If this is the next day, a +1 will be shown. The status color can be red=OFF, green=ON, grey=UNSET. The last occurs if the scheduler is disabled or no schedules were entered.</p>
+
+    <br><br>
+    <b>Output</b>
     <ul>
         <li><code>msg.payload</code> - The payload as configured in the node (default: on/off).</li>
         <li><code>msg.topic</code> - The topic as configured in the node.</li>
     </ul>
 
-    <p><b>Input</b>
+    <br><br>
+   <b>Input</b>
 
     <ul>
         <li><code>msg.payload</code> - <i>string</i> <br><br>
-        You can send a msg to this node to manually override the schedule.
-        Send an <code>on</code>,<code>1</code> or <code>true</code> to immediately turn the output on. Alternatively send <code>off</code>,<code>0</code> or <code>false</code> to turn it off.
-        It will output the configured on/off payload and topic, unless they are empty in which case they will pass on the existing payload and topic.
-        Other attributes are passed on untouched. <b>Note</b>: Unless the scheduler is paused the next scheduled time will reset the manual override. </li>
-        <br>
-        You can also send a <code>pause</code> command through the input which will pause the scheduler.
-         <b>Note:</b> this is not saved and the schedule will continue after a restart of Node-Red.
+            You can send a msg to this node to manually override the schedule. The msg should contain a payload containing a command. You can also provide a topic, but note that a if you set a topic in the node configuration it will take precedence.
+
+            <h3>Available commands</h3> <br><br>
+
+            <code>on</code>,<code>1</code>,<code>true</code> - Manually turn the time switch on. <br><br>
+            <code>off</code>,<code>0</code>,<code>false</code> - Manually turn the switch off.
+             <br><br>
+            Unless the scheduler is paused, the next scheduled time will reset the manual overrides.  All msg attributes are passed on to the output, but note that the topic and payload will be set to the configured value in the node if set.
+             <br><br>
+            <code>pause</code> - Pause the time schedule. You can still turn it on/off manually using the input. <br><br>
+            <code>run</code> - Start the time schedule again.
+            <br><br>
+            None of these settings are saved and a restart of Node-Red will return to the regular schedule.
+            <br><br>
+            If you have disabled the schedule in the configuration or not provided a schedule, the node will not output any msgs except manual ones.
+
     </ul>
 </script>
