@@ -21,10 +21,7 @@ module.exports = function(RED) {
 
         /* disable scheduler if configured as such */
         if (config.disabled) scheduler.disable();
-
-        /** start up node listeners */
-        // startListeners();
-
+        
         /** start the scheduler */
         scheduler.start();
 
