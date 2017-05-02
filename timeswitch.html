@@ -353,14 +353,14 @@
         <li><code>disable</code> - This allows you to temporarily disable the scheduler. <b>Note:</b> incoming messages will still change the output.</li>
         <li><code>schedules</code> - Here you define the on/off schedules. You can add more on/off periods by clicking the add button.
         You must fill in all fields, hours, minutes and seconds. <b>Note:</b> Overlapping time periods are considered an error.
-        Schedules that are not considered valid will turn red in the editor and will not be activated on deploy.</li>
+        Schedules that are not considered valid will turn red in the editor and will not be activated on deploy. </li>
         <li><code>payload</code> - The payload to send to the output. (default: on/off)</li>
         <li><code>topic</code> - The topic to send to the output. (default: empty)</li>
     </ul>
 
     <br><br>
     <b>Status</b>
-    <p>The node status shows the time until the next event. If this is the next day, a +1 will be shown. The status color can be red=OFF, green=ON, grey=UNSET. The last occurs if the scheduler is disabled or no schedules were entered.</p>
+    <p>The node status shows the time until the next event. If this is the next day, a +1 will be shown. </p>
 
     <br><br>
     <b>Output</b>
@@ -388,7 +388,7 @@
             <br><br>
             None of these settings are saved and a restart of Node-Red will return to the regular schedule.
             <br><br>
-            If you have disabled the schedule in the configuration or not provided a schedule, the node will not output any msgs except manual ones.
+            If you have disabled the schedule in the configuration or not provided a schedule, the node will default to 'off' but will still accept input commands.
 
     </ul>
 </script>
