@@ -5,7 +5,7 @@ It is meant to resemble the functionality of mechanical and digital wall timers.
 
 <h2>Installation</h2>
 <hr>
-This node can be installed through the Node-Red palette or manually using npm in your node-red folder.
+<p>This node can be installed through the Node-Red palette or manually using npm in your node-red folder.</p>
 
 ```
 $ npm install node-red-contrib-timeswitch --save
@@ -13,9 +13,11 @@ $ npm install node-red-contrib-timeswitch --save
 
 <h2>Usage</h2>
 <hr>
+<p>
 After installation this node needs to be configured through the node config editor. You can add one or more time
 schedules and the node will emit output messages reflecting the beginning and end of a schedule. You can also send
 a message to this node to manually control the output. More information can be found in the info tab of the node.
+</p>
 
 
 
