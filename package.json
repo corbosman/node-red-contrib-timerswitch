@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-timeswitch",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Node-Red Time Switch",
   "main": "timeswitch.js",
   "author": {
