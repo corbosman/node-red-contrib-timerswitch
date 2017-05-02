@@ -347,6 +347,8 @@
     <p>This is a multi-schedule daily time switch node which allows you to add multiple on/off periods for a single output with a minumum duration of 1 second.  It is meant to resemble the functionality of mechanical and digital wall timers. </p>
 
     <br><br>
+    WARNING: THIS NODE IS STILL IN ACTIVE DEVELOPMENT, USE WITH CAUTION.
+    <br><br>
     <b>Configuration</b>
     <ul>
         <li><code>name</code> - The name of the node as shown in the node editor (default: time switch)</li>
@@ -370,7 +372,7 @@
     </ul>
 
     <br><br>
-   <b>Input</b>
+    <b>Input</b>
 
     <ul>
         <li><code>msg.payload</code> - <i>string</i> <br><br>
@@ -391,4 +393,7 @@
             If you have disabled the schedule in the configuration or not provided a schedule, the node will default to 'off' but will still accept input commands.
 
     </ul>
+    <br><br>
+    The source for this node can be found on <a href="https://github.com/corbosman/node-red-contrib-timeswitch">Github</a>.
+    Please file an issue on Github if you have any problems or questions.
 </script>
