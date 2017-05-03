@@ -1,29 +1,29 @@
 module.exports = function(RED) {
 
-    /**
-     * the scheduler
-     * @type {scheduler|exports|module.exports}
-     */
-    var scheduler = require('./lib/scheduler');
-
     RED.nodes.registerType("timerswitch", function(config) {
         RED.nodes.createNode(this,config);
         var node = this;
+
+        /**
+         * the scheduler
+         * @type {scheduler|exports|module.exports}
+         */
+        node.scheduler = require('./lib/scheduler')();
 
         /** maintain the output state so we dont send msgs if we dont have to */
         var outputState;
 
         /** initialise the scheduler */
-        scheduler.create(config.schedules);
+        node.scheduler.create(config.schedules, Math.random());
 
         /* register an alarm handler */
-        scheduler.register(alarm);
+        node.scheduler.register(alarm);
 
         /* disable scheduler if configured as such */
-        if (config.disabled) scheduler.disable();
-        
+        if (config.disabled) node.scheduler.disable();
+
         /** start the scheduler */
-        scheduler.start();
+        node.scheduler.start();
 
         setTimeout(function() {
             status();
@@ -33,7 +33,7 @@ module.exports = function(RED) {
 
         /* clean up after close */
         node.on('close', function() {
-            scheduler.get().forEach(function(s) {
+            node.scheduler.get().forEach(function(s) {
                 if (s.events && s.events.start) clearTimeout(s.events.start);
                 if (s.events && s.events.end) clearTimeout(s.events.end);
             });
@@ -44,15 +44,15 @@ module.exports = function(RED) {
             var command = msg.payload;
 
             if (command === 'on' || command === 1 || command === '1' || command === true ) {
-                scheduler.manual('on');
+                node.scheduler.manual('on');
             }
 
             if (command === 'off' || command === 0 || command === '0' || command === false ) {
-                scheduler.manual('off');
+                node.scheduler.manual('off');
             }
 
-            if (command === 'pause') scheduler.pause();
-            if (command === 'run') scheduler.run();
+            if (command === 'pause') node.scheduler.pause();
+            if (command === 'run') node.scheduler.run();
 
             status();
             send(msg);
@@ -78,13 +78,13 @@ module.exports = function(RED) {
          * print the current status
          */
         function status() {
-            var state       = scheduler.state();
-            var disabled    = scheduler.disabled();
-            var paused      = scheduler.paused();
-            var manual      = scheduler.manual();
-            var count       = scheduler.count();
-            var current     = count > 0 ? scheduler.current() : false;
-            var next        = count > 0 ? scheduler.next() : false;
+            var state       = node.scheduler.state();
+            var disabled    = node.scheduler.disabled();
+            var paused      = node.scheduler.paused();
+            var manual      = node.scheduler.manual();
+            var count       = node.scheduler.count();
+            var current     = count > 0 ? node.scheduler.current() : false;
+            var next        = count > 0 ? node.scheduler.next() : false;
             var now         = new Date();
 
             var color = state === 'on' ? 'green' : (state === 'off' ? 'red' : 'grey');
@@ -115,7 +115,7 @@ module.exports = function(RED) {
                 text += ' until ' + statusTime(untiltime);
 
                 /** if it's tomorrow, add a visual cue */
-                if (scheduler.earlier(untiltime, now)) text += '+1';
+                if (node.scheduler.earlier(untiltime, now)) text += '+1';
             }
 
             node.status({
@@ -132,9 +132,10 @@ module.exports = function(RED) {
          * @param state
          */
         function send(msg) {
+
             if (typeof msg == 'undefined') msg = {topic: ''};
 
-            var state = scheduler.state();
+            var state = node.scheduler.state();
 
             /** if we dont know the state, dont send a msg */
             if (!state) return;
