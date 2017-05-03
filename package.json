@@ -1,8 +1,8 @@
 {
-  "name": "node-red-contrib-timeswitch",
-  "version": "0.0.2",
-  "description": "A Node-RED node to provide a timeswitch to easily schedule multiple daily on/off events",
-  "main": "timeswitch.js",
+  "name": "node-red-contrib-timerswitch",
+  "version": "0.0.3",
+  "description": "An easy timer/timeswitch for Node-Red which allows you to add multiple schedules per day and supports schedules as low as 1 second.",
+  "main": "timerswitch.js",
   "author": {
     "name": "Cor Bosman",
     "email": "cor@in.ter.net"
@@ -13,19 +13,18 @@
     "timer",
     "switch",
     "timeswitch",
+    "timerswitch"
     "clock",
     "schedule",
-    "dusk",
-    "dawn",
     "multi"
   ],
   "node-red": {
     "nodes": {
-      "timeswitch": "timeswitch.js"
+      "timerswitch": "timerswitch.js"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/corbosman/node-red-contrib-timeswitch.git"
+    "url": "git+https://github.com/corbosman/node-red-contrib-timerswitch.git"
   }
 }

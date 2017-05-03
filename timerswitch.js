@@ -6,7 +6,7 @@ module.exports = function(RED) {
      */
     var scheduler = require('./lib/scheduler');
 
-    RED.nodes.registerType("timeswitch", function(config) {
+    RED.nodes.registerType("timerswitch", function(config) {
         RED.nodes.createNode(this,config);
         var node = this;
 

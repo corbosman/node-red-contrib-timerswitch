@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="timeswitch">
+<script type="text/x-red" data-template-name="timerswitch">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
@@ -11,8 +11,8 @@
     <div class="form-row" style="margin-bottom: 2px;">
         <p class="text-center"><i class="fa fa-list"></i>&nbsp;<strong>Schedules</strong></p>
     </div>
-    <div class="form-row node-timeswitch-schedules-row">
-        <ol id="node-timeswitch-schedules"></ol>
+    <div class="form-row node-timerswitch-schedules-row">
+        <ol id="node-timerswitch-schedules"></ol>
     </div>
     <hr>
     <div class="form-row">
@@ -36,20 +36,20 @@
 
 </script>
 
-<script type="text/x-red" data-template-timeswitch-row="">
+<script type="text/x-red" data-template-timerswitch-row="">
     <div>
         <div style="display: inline-block; width: 50px; margin-left: 10px;">
             <span><i class="fa fa-clock-o"></i><strong>&nbsp;&nbsp;ON</strong></span>
         </div>
-        <select class="node-input-timeswitch-select-hours on_h fill24" style="display: inline-block; width: 75px; margin-left: 10px;">
+        <select class="node-input-timerswitch-select-hours on_h fill24" style="display: inline-block; width: 75px; margin-left: 10px;">
             <option value="-1">hour</option>
         </select>
         :
-        <select class="node-input-timeswitch-select-minutes on_m fill60" style="display: inline-block; width: 75px;">
+        <select class="node-input-timerswitch-select-minutes on_m fill60" style="display: inline-block; width: 75px;">
             <option value="-1">min</option>
         </select>
         :
-        <select class="node-input-timeswitch-select-seconds on_s fill60" style="display: inline-block; width: 75px;">
+        <select class="node-input-timerswitch-select-seconds on_s fill60" style="display: inline-block; width: 75px;">
             <option value="-1">sec</option>
         </select>
     </div>
@@ -57,15 +57,15 @@
         <div style="display: inline-block; width: 50px; margin-left: 10px;">
             <span><i class="fa fa-clock-o"></i><strong>&nbsp;&nbsp;OFF</strong></span>
         </div>
-        <select class="node-input-timeswitch-select-hours off_h fill24" style="display: inline-block; width: 75px; margin-left: 10px;">
+        <select class="node-input-timerswitch-select-hours off_h fill24" style="display: inline-block; width: 75px; margin-left: 10px;">
             <option value="-1">hour</option>
         </select>
         :
-        <select class="node-input-timeswitch-select-minutes off_m fill60" style="display: inline-block; width: 75px;">
+        <select class="node-input-timerswitch-select-minutes off_m fill60" style="display: inline-block; width: 75px;">
             <option value="-1">min</option>
         </select>
         :
-        <select class="node-input-timeswitch-select-seconds off_s fill60" style="display: inline-block; width: 75px;">
+        <select class="node-input-timerswitch-select-seconds off_s fill60" style="display: inline-block; width: 75px;">
             <option value="-1">sec</option>
         </select>
     </div>
@@ -73,7 +73,7 @@
 
 <script type="text/javascript">
 
-    RED.nodes.registerType('timeswitch', {
+    RED.nodes.registerType('timerswitch', {
         category: 'input',
         color: '#C0DEED',
         defaults: {
@@ -198,9 +198,9 @@
         outputs:1,
         icon: "timer.png",
         label: function() {
-            return this.name || 'time switch';
+            return this.name || 'timerswitch';
         },
-        paletteLabel: 'time switch',
+        paletteLabel: 'timerswitch',
 
         oneditprepare: function() {
             var node = this;
@@ -208,7 +208,7 @@
             /**
              * prepare schedule
              */
-            var scheduleList = $('#node-timeswitch-schedules');
+            var scheduleList = $('#node-timerswitch-schedules');
 
             scheduleList.css('min-height','110px').css('min-width','350px').editableList({
                 sortable: true,
@@ -216,7 +216,7 @@
                 addItem: function(row, index, data) {
                     schedule = data.schedule || false;
 
-                    var template = $("script[data-template-timeswitch-row]").html()||"";
+                    var template = $("script[data-template-timerswitch-row]").html()||"";
                     $(row).append(template);
                     fillOptions(row, schedule);
                     scheduleResize();
@@ -313,7 +313,7 @@
             var node = this;
             node.schedules = [];
 
-            var scheduleList = $('#node-timeswitch-schedules');
+            var scheduleList = $('#node-timerswitch-schedules');
             var schedules = scheduleList.editableList('items');
 
             schedules.each(function(i) {
@@ -343,7 +343,7 @@
 
 </script>
 
-<script type="text/x-red" data-help-name="timeswitch">
+<script type="text/x-red" data-help-name="timerswitch">
     <p>This is a multi-schedule daily time switch node which allows you to add multiple on/off periods for a single output with a minumum duration of 1 second.  It is meant to resemble the functionality of mechanical and digital wall timers. </p>
 
     <br><br>
@@ -394,6 +394,6 @@
 
     </ul>
     <br><br>
-    The source for this node can be found on <a href="https://github.com/corbosman/node-red-contrib-timeswitch">Github</a>.
+    The source for this node can be found on <a href="https://github.com/corbosman/node-red-contrib-timerswitch">Github</a>.
     Please file an issue on Github if you have any problems or questions.
 </script>
