@@ -14,7 +14,7 @@ module.exports = function(RED) {
         var outputState;
 
         /** initialise the scheduler */
-        node.scheduler.create(config.schedules, Math.random());
+        node.scheduler.create(config.schedules);
 
         /* register an alarm handler */
         node.scheduler.register(alarm);
@@ -42,7 +42,7 @@ module.exports = function(RED) {
         /* handle incoming msgs */
         node.on('input', function(msg) {
             var command = msg.payload;
-
+            
             if (command === 'on' || command === 1 || command === '1' || command === true ) {
                 node.scheduler.manual('on');
             }
