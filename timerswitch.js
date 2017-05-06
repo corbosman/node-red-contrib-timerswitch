@@ -22,10 +22,10 @@ module.exports = function(RED) {
         /* disable scheduler if configured as such */
         if (config.disabled) node.scheduler.disable();
 
-        /** start the scheduler */
-        node.scheduler.start();
-
         setTimeout(function() {
+            /** start the scheduler */
+            node.scheduler.start();
+
             status();
             send();
         }, 1000);
@@ -42,7 +42,7 @@ module.exports = function(RED) {
         /* handle incoming msgs */
         node.on('input', function(msg) {
             var command = msg.payload;
-            
+
             if (command === 'on' || command === 1 || command === '1' || command === true ) {
                 node.scheduler.manual('on');
             }
@@ -132,7 +132,6 @@ module.exports = function(RED) {
          * @param state
          */
         function send(msg) {
-
             if (typeof msg == 'undefined') msg = {topic: ''};
 
             var state = node.scheduler.state();
