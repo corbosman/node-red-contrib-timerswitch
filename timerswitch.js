@@ -17,7 +17,7 @@ module.exports = function(RED) {
         node.scheduler.create(config.schedules);
 
         /* register an alarm handler */
-        node.scheduler.register(alarm);
+        node.scheduler.register(alarm, status);
 
         /* disable scheduler if configured as such */
         if (config.disabled) node.scheduler.disable();
@@ -37,6 +37,8 @@ module.exports = function(RED) {
                 if (s.events && s.events.start) clearTimeout(s.events.start);
                 if (s.events && s.events.end) clearTimeout(s.events.end);
             });
+
+            if (node.scheduler.events.midnight) clearTimeout(node.scheduler.events.midnight);
         });
 
         /* handle incoming msgs */
