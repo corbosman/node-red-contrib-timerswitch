@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-timerswitch",
-  "version": "0.0.13",
+  "version": "1.0.0",
   "description": "An easy timer/timeswitch for Node-Red which allows you to add multiple schedules per day and supports schedules as low as 1 second.",
   "main": "timerswitch.js",
   "author": {
