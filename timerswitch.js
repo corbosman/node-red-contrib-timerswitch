@@ -10,20 +10,20 @@ module.exports = function(RED) {
          */
         node.scheduler = require('./lib/scheduler')();
 
-        /** maintain the output state so we dont send msgs if we dont have to */
+        /* maintain the output state so we dont send msgs if we dont have to */
         var outputState;
 
-        /** initialise the scheduler */
+        /* initialise the scheduler */
         node.scheduler.create(config.schedules);
 
         /* register an alarm handler */
-        node.scheduler.register(alarm, status);
+        node.scheduler.register(alarm);
 
         /* disable scheduler if configured as such */
         if (config.disabled) node.scheduler.disable();
 
         setTimeout(function() {
-            /** start the scheduler */
+            /* start the scheduler */
             node.scheduler.start();
 
             status();
@@ -47,14 +47,13 @@ module.exports = function(RED) {
 
             if (command === 'on' || command === 1 || command === '1' || command === true ) {
                 node.scheduler.manual('on');
-            }
-
-            if (command === 'off' || command === 0 || command === '0' || command === false ) {
+            } else if (command === 'off' || command === 0 || command === '0' || command === false ) {
                 node.scheduler.manual('off');
+            } else if (command === 'pause') {
+                node.scheduler.pause();
+            } else if (command === 'run') {
+                node.scheduler.run();
             }
-
-            if (command === 'pause') node.scheduler.pause();
-            if (command === 'run') node.scheduler.run();
 
             status();
             send(msg);
@@ -68,11 +67,12 @@ module.exports = function(RED) {
          *
          * @param s
          */
-        function alarm(s) {
-            /** set new status */
+        function alarm() {
+
+            /* set new status */
             status();
 
-            /** send new msg */
+            /* send new msg */
             send();
         }
 
@@ -116,7 +116,7 @@ module.exports = function(RED) {
 
                 text += ' until ' + statusTime(untiltime);
 
-                /** if it's tomorrow, add a visual cue */
+                /* if it's tomorrow, add a visual cue */
                 if (node.scheduler.earlier(untiltime, now)) text += '+1';
             }
 
@@ -138,7 +138,7 @@ module.exports = function(RED) {
 
             var state = node.scheduler.state();
 
-            /** if we dont know the state, dont send a msg */
+            /* if we dont know the state, dont send a msg */
             if (!state) return;
 
             /* if state hasnt changed, just return */

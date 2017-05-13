@@ -1,6 +1,6 @@
 # node-red-contrib-timerswitch
 
-<p>This is a Node-Red multi-schedule daily timer switch node which allows you to add multiple on/off periods for a single output with a minumum duration of 1 second.  
+<p>This is a Node-Red multi-schedule daily timer switch node which allows you to add multiple on/off periods for a single output with a minimum duration of 1 second.  
 It is meant to resemble the functionality of mechanical and digital wall timers. </p>
 
 <h2>Installation</h2>
