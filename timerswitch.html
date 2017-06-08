@@ -386,7 +386,7 @@
             Unless the scheduler is paused, the next scheduled time will reset the manual overrides.  All msg attributes are passed on to the output, but note that the topic and payload will be set to the configured value in the node if set.
              <br><br>
             <code>pause</code> - Pause the time schedule. You can still turn it on/off manually using the input. <br><br>
-            <code>run</code> - Start the time schedule again.
+            <code>resume</code> - Start the time schedule again. If the scheduler is paused or you have set it on/off manually this will return the timer to its normal schedule.
             <br><br>
             None of these settings are saved and a restart of Node-Red will return to the regular schedule.
             <br><br>

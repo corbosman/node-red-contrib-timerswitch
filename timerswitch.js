@@ -51,8 +51,8 @@ module.exports = function(RED) {
                 node.scheduler.manual('off');
             } else if (command === 'pause') {
                 node.scheduler.pause();
-            } else if (command === 'run') {
-                node.scheduler.run();
+            } else if (command === 'resume' || command === 'run') {
+                node.scheduler.resume();
             }
 
             status();

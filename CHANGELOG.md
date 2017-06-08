@@ -1,3 +1,16 @@
+### 1.1
+
+- changed the "run" command to "resume" but run still works for backwards compatibility
+- the resume command will now return the schedule to its normal operation and undo any manual or pause action.
+
+### 1.0.1
+
+- code cleanup
+
+### 1.0.0
+
+- stable release
+
 ### 0.0.12
 
 **fixes**
