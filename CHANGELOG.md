@@ -1,4 +1,8 @@
-### 1.1
+### 1.1.1
+
+- minor change in status output, dont show 'empty' when there is no timer set.
+
+### 1.1.0
 
 - changed the "run" command to "resume" but run still works for backwards compatibility
 - the resume command will now return the schedule to its normal operation and undo any manual or pause action.

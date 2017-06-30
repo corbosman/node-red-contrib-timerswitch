@@ -98,9 +98,7 @@ module.exports = function(RED) {
 
             if (disabled) {
                 text += ' (disabled)';
-            } else if (count < 1) {
-                text += ' (empty)';
-            } else if (paused) {
+            }  else if (paused) {
                 text += ' (paused)'
             }
 

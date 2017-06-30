@@ -344,10 +344,10 @@
 </script>
 
 <script type="text/x-red" data-help-name="timerswitch">
-    <p>This is a multi-schedule daily time switch node which allows you to add multiple on/off periods for a single output with a minumum duration of 1 second.  It is meant to resemble the functionality of mechanical and digital wall timers. </p>
+    <p>This is a multi-schedule daily time switch node which allows you to add multiple on/off periods for a single output with a minumum duration of 1 second.  It is meant to resemble the functionality of mechanical and digital wall timers.
+    It is generally better to use one node to control multiple on/off schedules than using multiple nodes. This because during startup multiple nodes can send conflicting information about if a schedule should be on or off. This node solves that problem.
+    It was developed with accuracy and redundancy in mind as it controls my personal terrarium with live animals.</p>
 
-    <br><br>
-    Since this node is relatively new, it's recommended to check for updates regularly.
     <br><br>
     <b>Configuration</b>
     <ul>
