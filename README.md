@@ -22,7 +22,7 @@ The timer was designed to be accurate. It will come on/off at the exact time spe
 It also allows you to set a schedule in seconds, something other times generally don't support or only as a work-around. This makes this timer
 especially suited for time-sensitive projects. 
 
-Example: turns on at 8:15 exactly, and turns off 10 seconds later.
+Example: turns on at 8:15 exactly, and turns off 15 seconds later.
 
 ![](http://shot.ter.net/img/2017/201709121453-0832695a07c1c38b8b839902c761d0e2.png)
 
@@ -44,10 +44,16 @@ While starting up each node will send a message to say they are either on or off
 but this node does not have this problem. It will always know if a device needs to be on or off, and more so, it makes sure you don't mistakenly create overlapping 
 or otherwise inaccurate schedules.
 
-- **Can you add feature X**
+- **Why is this timer more accurate?**
+This timer was designed to turn on/off at exact times. Other timers often work using intervals where they check your schedule only once a minute or even less. This means when you
+want something to come on at 08:00am, it may actually not come on until 30 seconds later. This node does not have this problem, it will come on at exactly 08:00:00am. 
+This may or may not be important to you. 
+
+
+- **Can you add feature X?**
 
 You can always request additional features, but this node was not designed to have a lot of bells and whistles. It does a simple job and does it well without complicating things.
-If you need dawn/dusk schedules or other features like that other timers can do that.
+If you need dawn/dusk schedules or other features like that other timers can provide this.
 
 
 # Installation
