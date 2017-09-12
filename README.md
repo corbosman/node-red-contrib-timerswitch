@@ -43,7 +43,7 @@ While starting up each node will send a message to say they are either on or off
 but this node does not have this problem. It will always know if a device needs to be on or off, and more so, it makes sure you don't mistakenly create overlapping 
 or otherwise inaccurate schedules.
 
-- **Why is this timer more accurate?**
+- **What do you mean with accurate?**
 This timer was designed to turn on/off at exact times. Other timers often work using intervals where they check your schedule only once a minute or even less. This means when you
 want something to come on at 08:00am, it may actually not come on until 30 seconds later. This node does not have this problem, it will come on at exactly 08:00:00am. 
 This may or may not be important to you. 
