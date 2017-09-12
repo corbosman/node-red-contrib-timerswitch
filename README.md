@@ -38,7 +38,6 @@ Example: turns on 3 times a day for 15 minutes:
 # FAQ
 
 - **Why not simply use multiple nodes to control one device?**
-
 Most of the time you can turn something on/off using multiple nodes, but this can cause problems in certain cases. Imagine you have multiple nodes, and you restart Node-Red. 
 While starting up each node will send a message to say they are either on or off. Which one is correct? Is the device on or off? Sometimes there are ways around that, 
 but this node does not have this problem. It will always know if a device needs to be on or off, and more so, it makes sure you don't mistakenly create overlapping 
@@ -51,7 +50,6 @@ This may or may not be important to you.
 
 
 - **Can you add feature X?**
-
 You can always request additional features, but this node was not designed to have a lot of bells and whistles. It does a simple job and does it well without complicating things.
 If you need dawn/dusk schedules or other features like that other timers can provide this.
 
