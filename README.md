@@ -6,7 +6,7 @@ This node was developed as a scheduler for time-sensitive projects like aquarium
 
 * **A very easy and intuitive configuration interface. There are no bells and whistles that may confuse you**
 * **Allows for precise timing, turning something on/off at an exact time and for any number of seconds, minutes or hours**
-* **Gives you the ability to turn something on/off multiple days a day from a single node, which is unique to this timer**
+* **Gives you the ability to turn something on/off multiple times a day from a single node, which is unique to this timer**
 * **Can be controlled by sending messages to this node** 
 
 #### Configuration
