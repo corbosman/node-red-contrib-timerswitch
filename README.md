@@ -24,7 +24,7 @@ especially suited for time-sensitive projects.
 
 Example: turns on at 8:15 exactly, and turns off 10 seconds later.
 
-![](http://shot.ter.net/img/2017/201709121420-2f59c45ae004ba5baa1c61ffc07379e7.png)
+![](http://shot.ter.net/img/2017/201709121453-0832695a07c1c38b8b839902c761d0e2.png)
 
 #### Multiple schedules 
 This timer has the ability to turn something on/off multiple times a day. Examples could be an automated feeder, terrarium misting systems and 
