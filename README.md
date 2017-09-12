@@ -27,7 +27,7 @@ Example: turns on at 8:15 exactly, and turns off 15 seconds later.
 ![](http://shot.ter.net/img/2017/201709121453-0832695a07c1c38b8b839902c761d0e2.png)
 
 #### Multiple schedules 
-This timer has the ability to turn something on/off multiple times a day. Examples could be an automated feeder, terrarium misting systems and 
+This timer has the ability to turn something on/off multiple times a day. Examples could be an automated feeder, terrarium misting systems, garden watering systems and 
 other devices that may need to be turned on/off more than once. Simply click the "add" button to add multiple schedules. 
 
 Example: turns on 3 times a day for 15 minutes:
