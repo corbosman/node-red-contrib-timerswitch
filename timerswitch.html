@@ -111,6 +111,11 @@
                         on  = createTime(on_h,on_m,on_s);
                         off = createTime(off_h,off_m,off_s);
 
+                        /** 00:00:00 is unfortunately seen as start of day, so add 24 hours */
+                        if (off_h === 0 && off_m === 0 && off_s === 0) {
+                            off.setHours(off.getHours() + 24);
+                        }
+
                         if (on.getTime() <= off.getTime()) {
                             /** normal schedule */
                             schedules.push({
@@ -136,7 +141,6 @@
                             });
                         }
                     }
-
                     /** validate schedules */
                     for (var i=0; i < schedules.length; i++) {
                         s = schedules[i];
