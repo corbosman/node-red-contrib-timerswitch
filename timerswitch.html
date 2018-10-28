@@ -82,11 +82,9 @@
             offtopic:   { value: ''},
             onpayload:  { value: ''},
             offpayload: { value: ''},
-            disabled:     { value: false },
+            disabled:   { value: false },
             schedules: {
-                value: [
-
-                ],
+                value: [],
                 validate: function(v) {
                     var schedules = [];
 
@@ -143,7 +141,7 @@
                     }
                     /** validate schedules */
                     for (var i=0; i < schedules.length; i++) {
-                        s = schedules[i];
+                        var s = schedules[i];
 
                         /** hours should be 0..23 */
                         if (s.on_h < 0 || s.on_h > 23 || s.off_h < 0 || s.off_h > 23) {
@@ -227,11 +225,11 @@
                 },
                 removeItem: function(data) {
                     scheduleResize();
-                },
+                }
             });
 
             /**
-             * pass all existing schedules to editableList or pass an enpty one
+             * pass all existing schedules to editableList or pass an empty one
              */
             if (node.schedules.length == 0) {
                 scheduleList.editableList('addItem');
@@ -349,7 +347,7 @@
 
 <script type="text/x-red" data-help-name="timerswitch">
     <p>This is an easy to use multi-schedule timer which allows you to add multiple on/off periods for a single output with a minimum duration of 1 second.  </p>
-    <p>It is meant to resemble the functionality of mechanical and digital wall timers.It was developed with accuracy and redundancy in mind as it controls my personal terrarium with live animals. It can be used in any project where exact schedules are important. </p>
+    <p>It is meant to resemble the functionality of mechanical and digital wall timers. It was developed with accuracy and redundancy in mind as it controls my personal terrarium with live animals. It can be used in any project where exact schedules are important. </p>
 
     <br><br>
     <b>Configuration</b>

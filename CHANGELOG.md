@@ -1,3 +1,11 @@
+### 1.2.3
+
+- readme fixes
+
+### 1.2.2
+
+- fix visual bug with schedules ending at midnight
+
 ### 1.1.1
 
 - minor change in status output, dont show 'empty' when there is no timer set.

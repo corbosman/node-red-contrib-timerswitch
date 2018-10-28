@@ -15,7 +15,7 @@ be found in the info tab of the node.
 
 Example: turns on at 8am and off at 9am.
  
-![](http://shot.ter.net/img/2017/201709121401-fb5a15d975b1600b664cbedb156f9d09.png)
+![](https://photos.smugmug.com/photos/i-ZtRFJHq/0/fe7158be/S/i-ZtRFJHq-S.png)
 
 #### Timer
 The timer was designed to be accurate. It will come on/off at the exact time specified while other timers can be off by as much as a minute. 
@@ -24,7 +24,7 @@ especially suited for time-sensitive projects.
 
 Example: turns on at 8:15 exactly, and turns off 15 seconds later.
 
-![](http://shot.ter.net/img/2017/201709121453-0832695a07c1c38b8b839902c761d0e2.png)
+![](https://photos.smugmug.com/photos/i-HsKtRZm/0/1f15b7f4/S/i-HsKtRZm-S.png)
 
 #### Multiple schedules 
 This timer has the ability to turn something on/off multiple times a day. Examples could be an automated feeder, terrarium misting systems, garden watering systems and 
@@ -32,7 +32,7 @@ other devices that may need to be turned on/off more than once. Simply click the
 
 Example: turns on 3 times a day for 15 minutes:
 
-![](http://shot.ter.net/img/2017/201709121424-209cc2567f827dbaf5ba0377c0adc65f.png)
+![](https://photos.smugmug.com/photos/i-L3rdxCX/0/9c7afe4f/S/i-L3rdxCX-S.png)
 
 
 # FAQ
