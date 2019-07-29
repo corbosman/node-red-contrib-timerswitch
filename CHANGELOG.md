@@ -1,3 +1,7 @@
+### 1.2.4
+
+- readme fixes
+
 ### 1.2.3
 
 - readme fixes
