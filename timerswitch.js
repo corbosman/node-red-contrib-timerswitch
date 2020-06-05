@@ -135,6 +135,8 @@ module.exports = function(RED) {
             if (typeof msg == 'undefined') msg = {topic: ''};
 
             var state = node.scheduler.state();
+            var useontopic = node.scheduler.useontopic;
+            var useofftopic = node.scheduler.useofftopic;
 
             /* if we dont know the state, dont send a msg */
             if (!state) return;
@@ -147,12 +149,17 @@ module.exports = function(RED) {
 
             if (state == 'on') {
                 msg.payload = config.onpayload ? config.onpayload : state;
-                msg.topic   = config.ontopic ? config.ontopic : msg.topic;
+                if (useontopic) {
+                    msg.topic   = config.ontopic ? config.ontopic : msg.topic;
+                    node.send(msg);
+                }
             } else {
                 msg.payload = config.offpayload ? config.offpayload : state;
-                msg.topic   = config.offtopic ? config.offtopic : msg.topic;
+                if (useofftopic) {
+                    msg.topic   = config.offtopic ? config.offtopic : msg.topic;
+                    node.send(msg);
+                }
             }
-            node.send(msg);
         }
 
         /**
