@@ -132,8 +132,6 @@ module.exports = function(RED) {
          * @param state
          */
         function send(msg) {
-node.warn("Into 1");
-            
             if (typeof msg == 'undefined') msg = {topic: ''};
 
             var state = node.scheduler.state();
@@ -143,14 +141,12 @@ node.warn("Into 1");
             /* if we dont know the state, dont send a msg */
             if (!state) return;
 
-node.warn("Into 2");
             /* if state hasnt changed, just return */
             // if (state === outputState) return;
 
             /* set new output state */
             outputState = state;
 
-node.warn("Into 3");
             if (state == 'on') {
                 msg.payload = config.onpayload ? config.onpayload : state;
                 if (useontopic) {
@@ -158,8 +154,6 @@ node.warn("Into 3");
                     node.send(msg);
                 }
             } else {
-node.warn("Into 4");
-node.warn(useofftopic);
                 msg.payload = config.offpayload ? config.offpayload : state;
                 if (useofftopic) {
                     msg.topic   = config.offtopic ? config.offtopic : msg.topic;
