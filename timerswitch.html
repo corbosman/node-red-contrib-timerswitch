@@ -265,13 +265,13 @@
                 schedule = schedule ? schedule : { on_h:-1,on_m:-1,on_s:-1,off_h:-1,off_m:-1,off_s:-1};
 
                 var hours = row.find('.fill24');
-                for (i = 0; i < 24; i++) {
+                for (var i = 0; i < 24; i++) {
                     i = pad(i);
                     hours.append($("<option></option>").val(i).text(i));
                 }
 
                 var minsec = row.find('.fill60');
-                for (i = 0; i < 60; i++) {
+                for (var i = 0; i < 60; i++) {
                     i = pad(i);
                     minsec.append($("<option></option>").val(i).text(i));
                 }
