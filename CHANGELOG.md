@@ -1,3 +1,7 @@
+### 1.3.0
+
+- fix bug that prevents multiple schedules
+
 ### 1.2.4
 
 - readme fixes
