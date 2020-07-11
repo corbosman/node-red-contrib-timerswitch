@@ -27,10 +27,16 @@
     <div class="form-row">
         <label for="node-input-ontopic"><i class="fa fa-tasks"></i> <span>On Topic</span></label>
         <input type="text" id="node-input-ontopic">
+        <input type="checkbox" id="node-input-useontopic" style="width: 20px;"
+               checked="checked"
+               title="Check to send topic. If topic is empty, topic is passed through.">
     </div>
     <div class="form-row">
         <label for="node-input-offtopic"><i class="fa fa-tasks"></i> <span>Off Topic</span></label>
         <input type="text" id="node-input-offtopic">
+        <input type="checkbox" id="node-input-useofftopic" style="width: 20px;" 
+               checked="checked"
+               title="Check to send this topic. If topic is empty, topic is passed through.">
     </div>
     <hr>
 
@@ -80,6 +86,8 @@
             name:       { value: ''},
             ontopic:    { value: ''},
             offtopic:   { value: ''},
+            useontopic: { value: true},
+            useofftopic:{ value: true},
             onpayload:  { value: ''},
             offpayload: { value: ''},
             disabled:   { value: false },
@@ -370,6 +378,7 @@
     <ul>
         <li><code>msg.payload</code> - The payload as configured in the node (default: on/off).</li>
         <li><code>msg.topic</code> - The topic as configured in the node.</li>
+        If you only want to send a "on" or "off" message, just uncheck the other topic.
     </ul>
 
     <br><br>
