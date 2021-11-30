@@ -55,7 +55,7 @@ module.exports = function(RED) {
                 node.scheduler.resume();
             } else if (command === 'restart') {
         		outputState = null;
-	        }
+	    }
 
             status();
             send(msg);
