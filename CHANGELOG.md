@@ -1,3 +1,7 @@
+### 1.4.0
+
+- New input parameter "restart" added
+
 ### 1.3.0
 
 - fix bug that prevents multiple schedules
