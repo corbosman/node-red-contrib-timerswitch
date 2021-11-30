@@ -53,7 +53,9 @@ module.exports = function(RED) {
                 node.scheduler.pause();
             } else if (command === 'resume' || command === 'run') {
                 node.scheduler.resume();
-            }
+            } else if (command === 'restart') {
+        		outputState = null;
+	        }
 
             status();
             send(msg);
