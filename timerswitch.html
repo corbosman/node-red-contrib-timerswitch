@@ -389,6 +389,7 @@
             <code>pause</code> - Pause the time schedule. You can still turn it on/off manually using the input. <br><br>
             <code>resume</code> - Start the time schedule again. If the scheduler is paused or you have set it on/off manually this will return the timer to its normal schedule.
             <br><br>
+            <code>restart</code> - Restart the time schedule. Same as restarting Node-Red. Will result on evaluating current time and passing msg attributes accordingly. <br><br>
             None of these settings are saved and a restart of Node-Red will return to the regular schedule.
             <br><br>
             If you have disabled the schedule in the configuration or not provided a schedule, the node will default to 'off' but will still accept input commands.
