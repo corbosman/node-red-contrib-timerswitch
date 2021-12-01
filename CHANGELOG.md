@@ -1,6 +1,6 @@
 ### 1.4.0
 
-- New input parameter "restart" added
+- New input parameter "state" added
 
 ### 1.3.0
 
